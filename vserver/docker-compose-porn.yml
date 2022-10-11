@@ -36,8 +36,6 @@ services:
             - PGID=0
             - OPENVPN_PROVIDER=PIA
             - OPENVPN_CONFIG=sweden,austria,italy,belgium,france
-            - OPENVPN_USERNAME=p3990188
-            - OPENVPN_PASSWORD=7xQDcs3epw
             - OPENVPN_OPTS=--inactive 3600 --ping 10 --ping-exit 60
             - LOCAL_NETWORK=192.168.0.0/16
             - TZ=America/Chicago

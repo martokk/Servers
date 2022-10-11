@@ -1,29 +1,27 @@
 version: "3.9"
 
 x-logging: &v_logging
-    driver: json-file
-    options:
-        max-size: '10m'
-        max-file: '4'
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "4"
 
-#services:
-    #code-server:
-        #image: linuxserver/code-server:4.7.1
-        #container_name: code-server
-        #restart: unless-stopped
-        #networks:
-            #- v_bridge
-        #environment:
-            #- TZ=Europe/London # Specify a timezone to use EG Europe/London
-            #- SUDO_PASSWORD=42457406 # If this optional variable is set, user will have sudo access in the code-server terminal with the specified password.
-            #- PUID=1000 # for UserID
-            #- PGID=1000 # for GroupID
-        #volumes:
-
-            #- /media/martokk/FILES/Servers/martokk/code-server:/config
-            #- local_projects:/Projects
-        #ports:
-            #- 8443:8443/tcp # Web UI
+services:
+  code-server:
+    image: linuxserver/code-server:4.7.1
+    container_name: code-server
+    restart: unless-stopped
+    networks:
+      - v_bridge
+    environment:
+      - TZ=America/Chicago # Specify a timezone to use EG Europe/London
+      - PUID=1000 # for UserID
+      - PGID=1000 # for GroupID
+    volumes:
+      - /media/martokk/FILES/Servers/martokk/code-server:/config
+      - local_projects:/Projects
+    ports:
+      - 8443:8443/tcp # Web UI
 
 # TOP-LEVEL CONFIG
 networks:
@@ -31,16 +29,13 @@ networks:
     driver: bridge
 
 volumes:
-
-# FILES - Internal HDD Partition
+  # FILES - Internal HDD Partition
   local_projects:
     driver_opts:
       device: "/media/martokk/FILES/Projects"
       o: bind
       type: none
 
-
   # WD_2TB - External HDD - Western Digital 2TB
-
 
   # WD_4TB - External HDD - Western Digital 4TB[
