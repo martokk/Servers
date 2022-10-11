@@ -1,0 +1,399 @@
+version: "3.9"
+
+x-logging: &v_logging
+    driver: json-file
+    options:
+        max-size: '10m'
+        max-file: '4'
+
+services:
+    flaresolverr:
+        image: ghcr.io/flaresolverr/flaresolverr:latest
+        container_name: flaresolverr
+        environment:
+            - LOG_LEVEL=info
+            - LOG_HTML=false
+            - CAPTCHA_SOLVER=none
+            - TZ=America/Chicago
+        ports:
+            - "8191:8191"
+        restart: unless-stopped
+    transmission:
+        image: haugene/transmission-openvpn
+        container_name: transmission
+        hostname: transmission
+        cap_add:
+            - NET_ADMIN
+        networks:
+            - v_bridge
+        logging: *v_logging
+        volumes:
+            - '/media/vserver/FILES/Servers/vserver/transmission:/data'
+            - 'local_torrents_complete:/data/completed'
+            - 'local_torrents_incomplete:/data/incomplete'
+        environment:
+            - PUID=0
+            - PGID=0
+            - OPENVPN_PROVIDER=PIA
+            - OPENVPN_CONFIG=sweden,austria,italy,belgium,france
+            - OPENVPN_USERNAME=p3990188
+            - OPENVPN_PASSWORD=7xQDcs3epw
+            - OPENVPN_OPTS=--inactive 3600 --ping 10 --ping-exit 60
+            - LOCAL_NETWORK=192.168.0.0/16
+            - TZ=America/Chicago
+            - TRANSMISSION_DOWNLOAD_QUEUE_SIZE=20
+            - TRANSMISSION_QUEUE_STALLED_MINUTES=5
+        ports:
+            - "9091:9091/tcp"
+            - "9091:9091/udp"
+            - "8888:8888"
+        restart: unless-stopped
+
+    prowlarr:
+        image: lscr.io/linuxserver/prowlarr:nightly
+        container_name: prowlarr
+        hostname: prowlarr
+        #cap_add:
+            #- NET_ADMIN
+        networks:
+            - v_bridge
+        logging: *v_logging
+        environment:
+            - PUID=0
+            - PGID=0
+            - TZ=America/Chicago
+        volumes:
+            - '/media/vserver/FILES/Servers/vserver/prowlarr:/config'
+        ports:
+            - '9696:9696'
+        logging:
+            driver: json-file
+            options:
+                max-size: 10m
+        restart: unless-stopped
+
+    sonarr:
+        image: linuxserver/sonarr:4.0.0-v4
+        container_name: sonarr
+        hostname: sonarr
+        #cap_add:
+            #- NET_ADMIN
+        networks:
+            - v_bridge
+        logging: *v_logging
+        depends_on:
+            - transmission
+            - prowlarr
+        environment:
+            - PUID=0
+            - PGID=0
+            - TZ=America/Chicago
+            - UMASK=022
+        volumes:
+            - /dev/rtc:/dev/rtc:ro
+            - '/media/vserver/FILES/Servers/vserver/sonarr:/config'
+            - 'local_torrents_complete:/data/completed'
+            - 'local_tv_shows:/tv_shows'
+            - 'ext_tv_shows:/wd_2tb_tv_shows'
+            - 'ext_porn_tv_shows:/wd_4tb_porn_tv_shows'
+        ports:
+            - 8989:8989
+        restart: unless-stopped
+
+    radarr:
+        image: lscr.io/linuxserver/radarr:latest
+        container_name: radarr
+        hostname: radarr
+        #cap_add:
+            #- NET_ADMIN
+        networks:
+            - v_bridge
+        logging: *v_logging
+        depends_on:
+            - transmission
+            - prowlarr
+        environment:
+            - PUID=0
+            - PGID=0
+            - TZ=America/Chicago
+        volumes:
+            - '/media/vserver/FILES/Servers/vserver/radarr:/config'
+            - 'local_torrents_complete:/data/completed'
+            - 'local_movies:/movies'
+            - 'ext_movies:/wd_2tb_movies'
+            - 'ext_porn_movies:/wd_4tb_porn_movies'
+            - 'ext_porn_adult:/wd_4tb_porn_adult'
+        ports:
+            - 7878:7878
+        restart: unless-stopped
+
+    lidarr:
+        image: lscr.io/linuxserver/lidarr:latest
+        container_name: lidarr
+        hostname: lidarr
+        #cap_add:
+            #- NET_ADMIN
+        networks:
+            - v_bridge
+        logging: *v_logging
+        depends_on:
+            - transmission
+            - prowlarr
+        environment:
+            - PUID=0
+            - PGID=0
+            - TZ=America/Chicago
+        volumes:
+            - '/media/vserver/FILES/Servers/vserver/lidarr:/config'
+            - 'local_torrents_complete:/data/completed'
+            - 'local_music:/music'
+            - 'ext_music:/wd_2tb_music'
+        ports:
+            - 8686:8686
+        restart: unless-stopped
+
+    whisparr:
+        image: cr.hotio.dev/hotio/whisparr:nightly
+        container_name: whisparr
+        hostname: whisparr
+        networks:
+            - v_bridge
+        logging: *v_logging
+        depends_on:
+            - transmission
+            - prowlarr
+        environment:
+            - PUID=999
+            - PGID=999
+            - TZ=America/Chicago
+        volumes:
+            - '/media/vserver/FILES/Servers/vserver/whisparr:/config'
+            - 'ext_porn_movies:/data/wd_4tb_porn_movies'
+            - 'ext_porn_adult:/data//wd_4tb_porn_adult'
+            - 'local_torrents_complete:/data/completed'
+        ports:
+            - "6969:6969"
+        restart: unless-stopped
+
+    bazarr:
+        image: lscr.io/linuxserver/bazarr:latest
+        container_name: bazarr
+        hostname: bazarr
+        #cap_add:
+            #- NET_ADMIN
+        networks:
+            - v_bridge
+        #depends_on:
+            #- sonarr
+            #- radarr
+        environment:
+            - PUID=999
+            - PGID=999
+            - UMASK=002
+            - TZ=America/Chicago
+        logging: *v_logging
+        volumes:
+            - '/media/vserver/FILES/Servers/vserver/bazarr:/config'
+            - 'local_movies:/movies'
+            - 'local_tv_shows:/tv_shows'
+            - 'ext_movies:/wd_2tb_movies'
+            - 'ext_tv_shows:/wd_2tb_tv_shows'
+            - 'ext_porn_movies:/wd_4tb_porn_movies'
+            - 'ext_porn_tv_shows:/wd_4tb_porn_tv_shows'
+        ports:
+            - 6767:6767
+        restart: unless-stopped
+
+
+    #readarr:
+        #image: lscr.io/linuxserver/readarr:develop
+        #container_name: readarr
+        #hostname: readarr
+        ##cap_add:
+            ##- NET_ADMIN
+        #networks:
+            #- v_bridge
+        #logging: *v_logging
+        #depends_on:
+            #- transmission
+            #- prowlarr
+        #environment:
+            #- PUID=999
+            #- PGID=999
+            #- UMASK=002
+            #- TZ=America/Chicago
+        #volumes:
+            #- '/media/vserver/FILES/Servers/vserver/readarr:/config'
+            #- 'local_ebooks/:/books'
+        #ports:
+            #- 8787:8787
+        #restart: unless-stopped
+
+
+    jellyfin:
+        image: lscr.io/linuxserver/jellyfin:latest
+        container_name: jellyfin
+        hostname: radarr
+        #cap_add:
+            #- NET_ADMIN
+        networks:
+            - v_bridge
+        logging: *v_logging
+        environment:
+            - PUID=0
+            - PGID=0
+            - TZ=America/Chicago
+            - JELLYFIN_PublishedServerUrl=192.168.0.223
+        volumes:
+            - '/media/vserver/FILES/Servers/vserver/jellyfin:/config' # This can grow very large, 50gb+ is likely for a large collection.
+            - 'local_movies:/data/movies'
+            - 'local_tv_shows:/data/tv_shows'
+            - 'ext_movies:/data/wd_2tb_movies'
+            - 'ext_tv_shows:/data/wd_2tb_tv_shows'
+            - 'ext_porn_adult:/data/wd_4tb_porn_adult'
+            - 'ext_porn_movies:/data/wd_4tb_porn_movies'
+            - 'ext_porn_tv_shows:/data/wd_4tb_porn_tv_shows'
+            - 'local_ebooks:/data/books'
+        ports:
+            - 8096:8096 # Http webUI.
+            #- 8920:8920 # Optional - Https webUI (you need to set up your own certificate).
+            - 7359:7359/udp # Optional - Allows clients to discover Jellyfin on the local network.
+            - 1900:1900/udp # Optional - Service discovery used by DNLA and clients.
+        restart: unless-stopped
+
+    uptime-kuma:
+        image: louislam/uptime-kuma:1
+        container_name: uptime-kuma
+        hostname: uptime-kuma
+        networks:
+            - v_bridge
+        logging: *v_logging
+        environment:
+            - TZ=America/Chicago
+        volumes:
+            - '/media/vserver/FILES/Servers/vserver/uptime-kuma:/app/data'
+        ports:
+            - 3001:3001
+        restart: unless-stopped
+
+
+    #stash:
+        #image: stashapp/stash:latest
+        #container_name: stash
+        #restart: unless-stopped
+        #cap_add:
+            #- NET_ADMIN
+        #network_mode: bridge
+        #ports:
+        #- "9999:9999"
+        #logging:
+            #driver: "json-file"
+            #options:
+                #max-file: "10"
+                #max-size: "2m"
+        #environment:
+            #- PUID=0
+            #- PGID=0
+            #- TZ=America/Chicago
+            #- STASH_STASH=/data/
+            #- STASH_GENERATED=/generated/
+            #- STASH_METADATA=/metadata/
+            #- STASH_CACHE=/cache/
+            #- STASH_PORT=9999
+        #volumes:
+            #- '/etc/localtime:/etc/localtime:ro'
+            ### Adjust below paths (the left part) to your liking.
+            ### E.g. you can change ./config:/root/.stash to ./stash:/root/.stash
+            ### Keep configs, scrapers, and plugins here.
+            #- '/media/vserver/FILES/Servers/vserver/stash:/root/.stash'
+            ### Point this at your collection.
+            #- '/media/martokk/WD Elements 4TB/Porn/Adult:/data'
+            ### This is where your stash's metadata lives
+            #- '/media/vserver/FILES/Servers/vserver/stash/metadata:/metadata'
+            ### Any other cache content.
+            #- '/media/vserver/FILES/Servers/vserver/stash/cache:/cache'
+            ### Where to store generated content (screenshots,previews,transcodes,sprites)
+            #- '/media/vserver/FILES/Servers/vserver/stash/generated:/generated'
+
+
+# TOP-LEVEL CONFIG
+networks:
+  v_bridge:
+    driver: bridge
+
+volumes:
+  vserver:
+    driver_opts:
+      device: "/media/vserver/FILES/Servers/vserver"
+      o: bind
+      type: none
+
+  # FILES - Internal HDD Partition
+  local_movies:
+    driver_opts:
+      device: "/media/vserver/FILES/Movies"
+      o: bind
+      type: none
+  local_music:
+    driver_opts:
+      device: "/media/vserver/FILES/Music"
+      o: bind
+      type: none
+  local_tv_shows:
+    driver_opts:
+      device: "/media/vserver/FILES/TV Shows"
+      o: bind
+      type: none
+  local_ebooks:
+    driver_opts:
+      device: "/media/vserver/FILES/Documents/eBooks"
+      o: bind
+      type: none
+  local_torrents_complete:
+    driver_opts:
+      device: "/media/vserver/FILES/__INBOX__/Torrents/complete"
+      o: bind
+      type: none
+  local_torrents_incomplete:
+    driver_opts:
+      device: "/media/vserver/FILES/__INBOX__/Torrents/incomplete"
+      o: bind
+      type: none
+
+
+  # WD_2TB - External HDD - Western Digital 2TB
+  ext_movies:
+    driver_opts:
+      device: "/media/vserver/WD_2TB/Movies"
+      o: bind
+      type: none
+  ext_music:
+    driver_opts:
+      device: "/media/vserver/WD_2TB/Music"
+      o: bind
+      type: none
+  ext_tv_shows:
+    driver_opts:
+      device: "/media/vserver/WD_2TB/TV Shows"
+      o: bind
+      type: none
+
+  # WD_4TB - External HDD - Western Digital 4TB
+
+
+  # SEAGATE_4TB - External HDD - Seagate 4TB
+  ext_porn_adult:
+    driver_opts:
+      device: "/media/vserver/SEAGATE_4TB/Porn/Adult"
+      o: bind
+      type: none
+  ext_porn_movies:
+    driver_opts:
+      device: "/media/vserver/SEAGATE_4TB/Porn/Movies"
+      o: bind
+      type: none
+  ext_porn_tv_shows:
+    driver_opts:
+      device: "/media/vserver/SEAGATE_4TB/Porn/TV Shows"
+      o: bind
+      type: none
