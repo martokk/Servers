@@ -42,21 +42,22 @@ services:
     security_opt:
       - seccomp:unconfined
 
-  #code-server:
-  #image: linuxserver/code-server:4.7.1
-  #container_name: code-server
-  #restart: unless-stopped
-  #networks:
-  #- v_bridge
-  #environment:
-  #- TZ=America/Chicago # Specify a timezone to use EG Europe/London
-  #- PUID=1000 # for UserID
-  #- PGID=1000 # for GroupID
-  #volumes:
-  #- /media/martokk/FILES/Servers/martokk/volumes/code-server:/config
-  #- local_projects:/Projects
-  #ports:
-  #- 8443:8443/tcp # Web UI
+  code-server:
+    image: linuxserver/code-server:4.7.1
+    container_name: code-server
+    restart: unless-stopped
+    networks:
+        - v_bridge
+    environment:
+        - TZ=America/Chicago # Specify a timezone to use EG Europe/London
+        - PUID=1000 # for UserID
+        - PGID=1000 # for GroupID
+        - DEFAULT_WORKSPACE=/config/workspace
+    volumes:
+        - /media/martokk/FILES/Servers/martokk/volumes/code-server:/config
+        - local_projects:/Projects
+    ports:
+      - 8443:8443
 
 # TOP-LEVEL CONFIG
 networks:
