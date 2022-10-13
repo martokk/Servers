@@ -1,0 +1,13 @@
+# VSERVER NOTES
+echo ""
+echo "--- vServer Notes ---"
+echo "sudo docker compose down --remove-orphans"
+echo "sudo docker compose -f ~/docker-compose.yml up -d --remove-orphans"
+echo "sudo docker compose down --remove-orphans && sudo docker compose -f ~/docker-compose.yml up -d --remove-orphans"
+echo ""
+echo "--- Docker Compose Files ---"
+echo "ALL  :  sudo docker compose down --remove-orphans && sudo docker compose -f ~/docker-compose.yml up -d --remove-orphans"
+echo "LOCAL:  sudo docker compose down --remove-orphans && sudo docker compose -f ~/docker-compose-local.yml up -d --remove-orphans"
+echo "EXT  :  sudo docker compose down --remove-orphans && sudo docker compose -f ~/docker-compose-ext.yml up -d --remove-orphans"
+echo "PORN :  sudo docker compose down --remove-orphans && sudo docker compose -f ~/docker-compose-porn.yml up -d --remove-orphans"
+echo "ALL  :  sudo docker compose down --remove-orphans && sudo docker compose -f ~/docker-compose-all.yml up -d --remove-orphans"

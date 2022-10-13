@@ -160,34 +160,8 @@ cython_debug/
 #.idea/
 
 
-vserver/amtd/
+*/volumes/*
 
-aws-server/.credentials/
+*/.credentials
 
-martokk/.env
 
-vserver/bazarr/
-
-vserver/jellyfin/
-
-vserver/lidarr/
-
-vserver/prowlarr/
-
-vserver/stash/
-
-vserver/readarr/
-
-vserver/sonarr_2/
-
-vserver/sonarr/
-
-vserver/uptime-kuma/
-
-vserver/transmission/
-
-vserver/radarr/
-
-vserver/whisparr/
-
-martokk/code-server/
