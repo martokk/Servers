@@ -1,0 +1,34 @@
+version: "3.9"
+
+x-logging: &v_logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "4"
+
+services:
+  portainer:
+    image: portainer/portainer-ce:latest
+    container_name: portainer
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /home/ubuntu/volumes/portainer:/data
+    ports:
+      - 9000:9000
+
+# TOP-LEVEL CONFIG
+#networks:
+  #v_bridge:
+    #driver: bridge
+
+volumes:
+  # FILES - Internal HDD Partition
+  local_server:
+    driver_opts:
+      device: "/home/ubuntu/"
+      o: bind
+      type: none

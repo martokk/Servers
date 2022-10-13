@@ -7,21 +7,56 @@ x-logging: &v_logging
     max-file: "4"
 
 services:
-  code-server:
-    image: linuxserver/code-server:4.7.1
-    container_name: code-server
+  portainer:
+    image: portainer/portainer-ce:latest
+    container_name: portainer
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    networks:
+      - v_bridge
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /media/martokk/FILES/Servers/martokk/volumes/portainer:/data
+    ports:
+      - 9000:9000
+
+  webtop:
+    image: lscr.io/linuxserver/webtop:ubuntu-kde
+    container_name: webtop
+    privileged: true
     restart: unless-stopped
     networks:
       - v_bridge
     environment:
-      - TZ=America/Chicago # Specify a timezone to use EG Europe/London
-      - PUID=1000 # for UserID
-      - PGID=1000 # for GroupID
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Chicago
     volumes:
-      - /media/martokk/FILES/Servers/martokk/code-server:/config
-      - local_projects:/Projects
+      - /media/martokk/FILES/Servers/martokk/volumes/webtop-vdev:/config
+      - /var/run/docker.sock:/var/run/docker.sock
     ports:
-      - 8443:8443/tcp # Web UI
+      - 3000:3000
+    shm_size: "2gb"
+    security_opt:
+      - seccomp:unconfined
+
+  #code-server:
+  #image: linuxserver/code-server:4.7.1
+  #container_name: code-server
+  #restart: unless-stopped
+  #networks:
+  #- v_bridge
+  #environment:
+  #- TZ=America/Chicago # Specify a timezone to use EG Europe/London
+  #- PUID=1000 # for UserID
+  #- PGID=1000 # for GroupID
+  #volumes:
+  #- /media/martokk/FILES/Servers/martokk/volumes/code-server:/config
+  #- local_projects:/Projects
+  #ports:
+  #- 8443:8443/tcp # Web UI
 
 # TOP-LEVEL CONFIG
 networks:
