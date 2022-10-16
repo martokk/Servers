@@ -20,10 +20,52 @@ services:
     ports:
       - 9000:9000
 
+  webtop:
+    image: lscr.io/linuxserver/webtop:ubuntu-kde
+    container_name: webtop
+    privileged: true
+    restart: unless-stopped
+    networks:
+      - v_bridge
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Chicago
+    volumes:
+      - /home/ubuntu/volumes/webtop-vdev:/config
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - 3000:3000
+    shm_size: "1gb"
+    security_opt:
+      - seccomp:unconfined
+
+  code-server:
+    # build: /media/martokk/FILES/Projects/docker-code-server
+    image: martokk/docker-code-server:latest
+    container_name: code-server
+    restart: unless-stopped
+    networks:
+      - v_bridge
+    environment:
+      - TZ=America/Chicago # Specify a timezone to use EG Europe/London
+      - PUID=1000 # for UserID
+      - PGID=1000 # for GroupID
+      - PASSWORD=${DOCKER_CODE_SERVER_PASSWORD}
+      - SUDO_PASSWORD=${DOCKER_CODE_SERVER_SUDO_PASSWORD}
+      - DEFAULT_WORKSPACE=/config/workspace
+    volumes:
+      - /home/ubuntu/volumes/code-server:/config
+      # - local_projects:/Projects #
+    ports:
+      - 8443:8443
+
+
+
 # TOP-LEVEL CONFIG
-#networks:
-  #v_bridge:
-    #driver: bridge
+networks:
+  v_bridge:
+    driver: bridge
 
 volumes:
   # FILES - Internal HDD Partition

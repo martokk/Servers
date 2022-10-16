@@ -22,42 +22,73 @@ services:
     ports:
       - 9000:9000
 
-  webtop:
-    image: lscr.io/linuxserver/webtop:ubuntu-kde
-    container_name: webtop
-    privileged: true
-    restart: unless-stopped
-    networks:
-      - v_bridge
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=America/Chicago
-    volumes:
-      - /media/martokk/FILES/Servers/martokk/volumes/webtop-vdev:/config
-      - /var/run/docker.sock:/var/run/docker.sock
-    ports:
-      - 3000:3000
-    shm_size: "2gb"
-    security_opt:
-      - seccomp:unconfined
+  #webtop:
+    #image: lscr.io/linuxserver/webtop:ubuntu-kde
+    #container_name: webtop
+    #privileged: true
+    #restart: unless-stopped
+    #networks:
+      #- v_bridge
+    #environment:
+      #- PUID=1000
+      #- PGID=1000
+      #- TZ=America/Chicago
+    #volumes:
+      #- /media/martokk/FILES/Servers/martokk/volumes/webtop-vdev:/config
+      #- /var/run/docker.sock:/var/run/docker.sock
+    #ports:
+      #- 3000:3000
+    #shm_size: "2gb"
+    #security_opt:
+      #- seccomp:unconfined
 
-  code-server:
-    image: linuxserver/code-server:4.7.1
-    container_name: code-server
+  #code-server:
+    ## build: /media/martokk/FILES/Projects/docker-code-server
+    #image: martokk/docker-code-server:latest
+    #container_name: code-server
+    #restart: unless-stopped
+    #networks:
+      #- v_bridge
+    #environment:
+      #- TZ=America/Chicago # Specify a timezone to use EG Europe/London
+      #- PUID=1000 # for UserID
+      #- PGID=1000 # for GroupID
+      #- PASSWORD=${DOCKER_CODE_SERVER_PASSWORD}
+      #- SUDO_PASSWORD=${DOCKER_CODE_SERVER_SUDO_PASSWORD}
+      #- DEFAULT_WORKSPACE=/config/workspace
+    #volumes:
+      #- /media/martokk/FILES/Servers/martokk/volumes/code-server:/config
+      ## - local_projects:/Projects #
+    #ports:
+      #- 8443:8443
+
+  samba:
+    image: servercontainers/samba
     restart: unless-stopped
-    networks:
-        - v_bridge
+    network_mode: host
     environment:
-        - TZ=America/Chicago # Specify a timezone to use EG Europe/London
-        - PUID=1000 # for UserID
-        - PGID=1000 # for GroupID
-        - DEFAULT_WORKSPACE=/config/workspace
+        AVAHI_NAME: xlm76x
+        SAMBA_CONF_LOG_LEVEL: 3
+        GROUP_family: 1500
+        ACCOUNT_xlm76x: 42457406
+        UID_xlm76x: 1000
+        GROUPS_xlm76x: family
+        SAMBA_VOLUME_CONFIG_wd_4tb: "[WD 4TB - VR]; path=/shares/WD_4TB; valid users = xlm76x; guest ok = no; read only = no; browseable = yes"
+        SAMBA_VOLUME_CONFIG_MyPassport_2tb: "[MyPassport_2tb - VR]; path=/shares/MyPassport_2tb; valid users = xlm76x; guest ok = no; read only = no; browseable = yes"
+        SAMBA_VOLUME_CONFIG_FILES_Movies: "[FILES_Movies]; path=/shares/FILES_Movies; valid users = xlm76x; guest ok = no; read only = no; browseable = yes"
+        SAMBA_VOLUME_CONFIG_FILES_TV_Shows: "[FILES_TV_Shows]; path=/shares/FILES_TV_Shows; valid users = xlm76x; guest ok = no; read only = no; browseable = yes"
+        SAMBA_VOLUME_CONFIG_WD_2TB_Movies: "[WD_2TB_Movies]; path=/shares/WD_2TB_Movies; valid users = xlm76x; guest ok = no; read only = no; browseable = yes"
+        SAMBA_VOLUME_CONFIG_WD_2TB_TV_Shows: "[WD_2TB_TV_Shows]; path=/shares/WD_2TB_TV_Shows; valid users = xlm76x; guest ok = no; read only = no; browseable = yes"
     volumes:
-        - /media/martokk/FILES/Servers/martokk/volumes/code-server:/config
-        - local_projects:/Projects
-    ports:
-      - 8443:8443
+        - /etc/avahi/services/:/external/avahi
+        # avoid loops when mounting folders to /shares (I'd recommend explicit mapping for each share)
+        - /media/martokk/WD_4TB:/shares/WD_4TB
+        - /media/martokk/WE MyPassport 2T:/shares/MyPassport_2tb
+        - /media/martokk/FILES/Movies:/shares/FILES_Movies
+        - '/media/martokk/FILES/TV Shows:/shares/FILES_TV_Shows'
+        - /media/martokk/WD_2TB/Movies:/shares/WD_2TB_Movies
+        - '/media/martokk/WD_2TB/TV Shows:/shares/WD_2TB_TV_Shows'
+
 
 # TOP-LEVEL CONFIG
 networks:
