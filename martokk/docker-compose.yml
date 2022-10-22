@@ -80,13 +80,12 @@ services:
         SAMBA_VOLUME_CONFIG_WD_2TB_Movies: "[WD_2TB_Movies]; path=/shares/WD_2TB_Movies; valid users = xlm76x; guest ok = no; read only = no; browseable = yes"
         SAMBA_VOLUME_CONFIG_WD_2TB_TV_Shows: "[WD_2TB_TV_Shows]; path=/shares/WD_2TB_TV_Shows; valid users = xlm76x; guest ok = no; read only = no; browseable = yes"
     volumes:
-        - /etc/avahi/services/:/external/avahi
-        # avoid loops when mounting folders to /shares (I'd recommend explicit mapping for each share)
-        - /media/martokk/WD_4TB:/shares/WD_4TB
-        - /media/martokk/WE MyPassport 2T:/shares/MyPassport_2tb
-        - /media/martokk/FILES/Movies:/shares/FILES_Movies
+        - '/etc/avahi/services/:/external/avahi'
+        - '/media/martokk/WD_4TB:/shares/WD_4TB'
+        - '/media/martokk/WD_MyPassport_2T:/shares/MyPassport_2tb'
+        - '/media/martokk/FILES/Movies:/shares/FILES_Movies'
         - '/media/martokk/FILES/TV Shows:/shares/FILES_TV_Shows'
-        - /media/martokk/WD_2TB/Movies:/shares/WD_2TB_Movies
+        - '/media/martokk/WD_2TB/Movies:/shares/WD_2TB_Movies'
         - '/media/martokk/WD_2TB/TV Shows:/shares/WD_2TB_TV_Shows'
 
 
