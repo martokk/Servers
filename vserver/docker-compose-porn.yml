@@ -253,11 +253,11 @@ services:
             - JELLYFIN_PublishedServerUrl=192.168.0.25
         volumes:
             - '/media/vserver/FILES/Servers/vserver/volumes/jellyfin:/config' # This can grow very large, 50gb+ is likely for a large collection.
-            - 'local_movies:/movies'
-            - 'local_tv_shows:/tv_shows'
-            - 'ext_porn_adult:/wd_4tb_porn_adult'
-            - 'ext_porn_movies:/wd_4tb_porn_movies'
-            - 'ext_porn_tv_shows:/wd_4tb_porn_tv_shows'
+            - 'local_movies:/data/movies'
+            - 'local_tv_shows:/data/tv_shows'
+            - 'ext_porn_adult:/data/wd_4tb_porn_adult'
+            - 'ext_porn_movies:/data/wd_4tb_porn_movies'
+            - 'ext_porn_tv_shows:/data/wd_4tb_porn_tv_shows'
             - 'local_ebooks:/data/books'
         ports:
             - 8096:8096 # Http webUI.
