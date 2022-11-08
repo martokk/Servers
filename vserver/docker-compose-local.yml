@@ -86,7 +86,7 @@ services:
                 max-size: 10m
         restart: unless-stopped
 
-    sonarr1:
+    sonarr:
         image: linuxserver/sonarr:4.0.0-v4
         container_name: sonarr
         hostname: sonarr
@@ -102,7 +102,7 @@ services:
             - PUID=0
             - PGID=0
             - TZ=America/Chicago
-            #- UMASK=022
+            - UMASK=022
         volumes:
             - /dev/rtc:/dev/rtc:ro
             - '/media/vserver/FILES/Servers/vserver/volumes/sonarr:/config'
@@ -273,44 +273,44 @@ services:
             - 3001:3001
         restart: unless-stopped
 
-
-    stash:
-        image: stashapp/stash:latest
-        container_name: stash
-        restart: unless-stopped
-        cap_add:
-            - NET_ADMIN
-        network_mode: bridge
-        ports:
-        - "9999:9999"
-        logging:
-            driver: "json-file"
-            options:
-                max-file: "10"
-                max-size: "2m"
-        environment:
-            - PUID=0
-            - PGID=0
-            - TZ=America/Chicago
-            - STASH_STASH=/data/
-            - STASH_GENERATED=/generated/
-            - STASH_METADATA=/metadata/
-            - STASH_CACHE=/cache/
-            - STASH_PORT=9999
-        volumes:
-            - '/etc/localtime:/etc/localtime:ro'
-            ## Adjust below paths (the left part) to your liking.
-            ## E.g. you can change ./config:/root/.stash to ./stash:/root/.stash
-            ## Keep configs, scrapers, and plugins here.
-            - '/media/vserver/FILES/Servers/vserver/volumes/stash:/root/.stash'
-            ## Point this at your collection.
-            # - '/media/martokk/WD_4TB/Risa_Archive/pornstars/Adria Rae:/data'
-            ## This is where your stash's metadata lives
-            - '/media/vserver/FILES/Servers/vserver/volumes/stash/metadata:/metadata'
-            ## Any other cache content.
-            - '/media/vserver/FILES/Servers/vserver/volumes/stash/cache:/cache'
-            ## Where to store generated content (screenshots,previews,transcodes,sprites)
-            - '/media/vserver/FILES/Servers/vserver/volumes/stash/generated:/generated'
+    #
+    # stash:
+    #     image: stashapp/stash:latest
+    #     container_name: stash
+    #     restart: unless-stopped
+    #     cap_add:
+    #         - NET_ADMIN
+    #     network_mode: bridge
+    #     ports:
+    #     - "9999:9999"
+    #     logging:
+    #         driver: "json-file"
+    #         options:
+    #             max-file: "10"
+    #             max-size: "2m"
+    #     environment:
+    #         - PUID=0
+    #         - PGID=0
+    #         - TZ=America/Chicago
+    #         - STASH_STASH=/data/
+    #         - STASH_GENERATED=/generated/
+    #         - STASH_METADATA=/metadata/
+    #         - STASH_CACHE=/cache/
+    #         - STASH_PORT=9999
+    #     volumes:
+    #         - '/etc/localtime:/etc/localtime:ro'
+    #         ## Adjust below paths (the left part) to your liking.
+    #         ## E.g. you can change ./config:/root/.stash to ./stash:/root/.stash
+    #         ## Keep configs, scrapers, and plugins here.
+    #         - '/media/vserver/FILES/Servers/vserver/volumes/stash:/root/.stash'
+    #         ## Point this at your collection.
+    #         # - '/media/martokk/WD_4TB/Risa_Archive/pornstars/Adria Rae:/data'
+    #         ## This is where your stash's metadata lives
+    #         - '/media/vserver/FILES/Servers/vserver/volumes/stash/metadata:/metadata'
+    #         ## Any other cache content.
+    #         - '/media/vserver/FILES/Servers/vserver/volumes/stash/cache:/cache'
+    #         ## Where to store generated content (screenshots,previews,transcodes,sprites)
+    #         - '/media/vserver/FILES/Servers/vserver/volumes/stash/generated:/generated'
 
 
 # TOP-LEVEL CONFIG
