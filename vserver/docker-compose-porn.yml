@@ -250,7 +250,7 @@ services:
             - PUID=0
             - PGID=0
             - TZ=America/Chicago
-            - JELLYFIN_PublishedServerUrl=192.168.0.223
+            - JELLYFIN_PublishedServerUrl=192.168.0.25
         volumes:
             - '/media/vserver/FILES/Servers/vserver/volumes/jellyfin:/config' # This can grow very large, 50gb+ is likely for a large collection.
             - 'local_movies:/movies'
