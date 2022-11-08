@@ -87,7 +87,7 @@ services:
         restart: unless-stopped
 
     sonarr:
-        image: lscr.io/linuxserver/sonarr:latest
+        image: linuxserver/sonarr:4.0.0-v4
         container_name: sonarr
         hostname: sonarr
         #cap_add:
