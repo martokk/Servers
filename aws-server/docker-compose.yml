@@ -7,59 +7,127 @@ x-logging: &v_logging
     max-file: "4"
 
 services:
-  portainer:
-    image: portainer/portainer-ce:latest
-    container_name: portainer
+  # portainer:
+  #   image: portainer/portainer-ce:latest
+  #   container_name: portainer
+  #   restart: unless-stopped
+  #   security_opt:
+  #     - no-new-privileges:true
+  #   volumes:
+  #     - /etc/localtime:/etc/localtime:ro
+  #     - /var/run/docker.sock:/var/run/docker.sock:ro
+  #     - /home/ubuntu/volumes/portainer:/data
+  #   ports:
+  #     - 9000:9000
+
+  duckdns:
+    image: lscr.io/linuxserver/duckdns:latest
+    container_name: duckdns
+    env_file:
+      - /home/ubuntu/.env
+    environment:
+      - PUID=1000 #optional
+      - PGID=1000 #optional
+      - LOG_FILE=false #optional
+    volumes:
+      - /home/ubuntu/volumes/duckdns:/config #optional
     restart: unless-stopped
-    security_opt:
-      - no-new-privileges:true
+
+  # webtop:
+  #   image: lscr.io/linuxserver/webtop:ubuntu-kde
+  #   container_name: webtop
+  #   privileged: true
+  #   restart: unless-stopped
+  #   networks:
+  #     - v_bridge
+  #   environment:
+  #     - PUID=1000
+  #     - PGID=1000
+  #     - TZ=America/Chicago
+  #   volumes:
+  #     - /home/ubuntu/volumes/webtop-vdev:/config
+  #     - /var/run/docker.sock:/var/run/docker.sock
+  #   ports:
+  #     - 3000:3000
+  #   shm_size: "1gb"
+  #   security_opt:
+  #     - seccomp:unconfined
+
+  # code-server:
+  #   # build: /media/martokk/FILES/Projects/docker-code-server
+  #   image: martokk/docker-code-server:latest
+  #   container_name: code-server
+  #   restart: unless-stopped
+  #   networks:
+  #     - v_bridge
+  #   environment:
+  #     - TZ=America/Chicago # Specify a timezone to use EG Europe/London
+  #     - PUID=1000 # for UserID
+  #     - PGID=1000 # for GroupID
+  #     - PASSWORD=${DOCKER_CODE_SERVER_PASSWORD}
+  #     - SUDO_PASSWORD=${DOCKER_CODE_SERVER_SUDO_PASSWORD}
+  #     - DEFAULT_WORKSPACE=/ubuntu-aws-root/home/ubuntu/volumes/volumes.code-workspace
+  #   volumes:
+  #     - /home/ubuntu/volumes/code-server:/config
+  #     - /:/ubuntu-aws-root
+  #     # - local_projects:/Projects #
+  #   ports:
+  #     - 8443:8443
+
+  # fullfeedfilter:
+  #   container_name: fullfeedfilter
+  #   build:
+  #     context: https://github.com/martokk/fullfeedfilter.git#main
+  #     target: production
+  #   restart: unless-stopped
+  #   depends_on:
+  #     - duckdns
+  #   env_file:
+  #     - /home/ubuntu/volumes/fullfeedfilter/.env
+  #   volumes:
+  #     - /home/ubuntu/volumes/fullfeedfilter/.env:/fullfeedfilter/.env
+  #     - /home/ubuntu/volumes/fullfeedfilter/logs:/fullfeedfilter/logs
+  #     - /home/ubuntu/volumes/fullfeedfilter/media:/fullfeedfilter/media
+  #     - /home/ubuntu/volumes/fullfeedfilter/db.sqlite3:/fullfeedfilter/db.sqlite3
+  #   ports:
+  #     - "8002:8002"
+
+  risa:
+    container_name: "risa"
+    image: "risa"
+    build:
+      context: https://github.com/martokk/risa.git#main
+      target: production
+    restart: unless-stopped
+    volumes:
+      - /home/ubuntu/volumes/risa/config:/risa/config
+      - /home/ubuntu/volumes/risa/data:/risa/data
+    ports:
+      - "8003:8003"
+
+  homeassistant:
+    container_name: homeassistant
+    image: "ghcr.io/home-assistant/home-assistant:stable"
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - /home/ubuntu/volumes/portainer:/data
-    ports:
-      - 9000:9000
-
-  webtop:
-    image: lscr.io/linuxserver/webtop:ubuntu-kde
-    container_name: webtop
-    privileged: true
+      - /home/ubuntu/volumes/hass-config-aws/:/config
     restart: unless-stopped
-    networks:
-      - v_bridge
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=America/Chicago
-    volumes:
-      - /home/ubuntu/volumes/webtop-vdev:/config
-      - /var/run/docker.sock:/var/run/docker.sock
+    # network_mode: host
     ports:
-      - 3000:3000
-    shm_size: "1gb"
-    security_opt:
-      - seccomp:unconfined
+      - 8123:8123
 
-  code-server:
-    # build: /media/martokk/FILES/Projects/docker-code-server
-    image: martokk/docker-code-server:latest
-    container_name: code-server
+  youtube_rss:
+    container_name: "youtube_rss"
+    image: "youtube_rss"
+    build:
+      context: https://github.com/martokk/youtube_rss.git#main
+      target: production
     restart: unless-stopped
-    networks:
-      - v_bridge
-    environment:
-      - TZ=America/Chicago # Specify a timezone to use EG Europe/London
-      - PUID=1000 # for UserID
-      - PGID=1000 # for GroupID
-      - PASSWORD=${DOCKER_CODE_SERVER_PASSWORD}
-      - SUDO_PASSWORD=${DOCKER_CODE_SERVER_SUDO_PASSWORD}
-      - DEFAULT_WORKSPACE=/config/workspace
-    volumes:
-      - /home/ubuntu/volumes/code-server:/config
-      # - local_projects:/Projects #
-    ports:
-      - 8443:8443
 
+    volumes:
+      - /home/ubuntu/volumes/youtube_rss/data:/youtube_rss/data
+    ports:
+      - "5000:5000"
 
 
 # TOP-LEVEL CONFIG

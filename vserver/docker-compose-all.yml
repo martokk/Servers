@@ -16,7 +16,7 @@ services:
         volumes:
             - '/etc/localtime:/etc/localtime:ro'
             - '/var/run/docker.sock:/var/run/docker.sock:ro'
-            - '/media/vserver/FILES/Servers/vserver/volumes/portainer:/data'
+            - '/media/vserver/FILES/dev/servers/vserver/volumes/portainer:/data'
         ports:
             - 9000:9000
 
@@ -42,7 +42,7 @@ services:
             - v_bridge
         logging: *v_logging
         volumes:
-            - '/media/vserver/FILES/Servers/vserver/volumes/transmission:/data'
+            - '/media/vserver/FILES/dev/servers/vserver/volumes/transmission:/data'
             - 'local_torrents_complete:/data/completed'
             - 'local_torrents_incomplete:/data/incomplete'
         environment:
@@ -77,7 +77,7 @@ services:
             - PGID=0
             - TZ=America/Chicago
         volumes:
-            - '/media/vserver/FILES/Servers/vserver/volumes/prowlarr:/config'
+            - '/media/vserver/FILES/dev/servers/vserver/volumes/prowlarr:/config'
         ports:
             - '9696:9696'
         logging:
@@ -105,7 +105,7 @@ services:
             - UMASK=022
         volumes:
             - /dev/rtc:/dev/rtc:ro
-            - '/media/vserver/FILES/Servers/vserver/volumes/sonarr:/config'
+            - '/media/vserver/FILES/dev/servers/vserver/volumes/sonarr:/config'
             - 'local_torrents_complete:/data/completed'
             - 'local_tv_shows:/tv_shows'
             - 'ext_tv_shows:/wd_2tb_tv_shows'
@@ -131,7 +131,7 @@ services:
             - PGID=0
             - TZ=America/Chicago
         volumes:
-            - '/media/vserver/FILES/Servers/vserver/volumes/radarr:/config'
+            - '/media/vserver/FILES/dev/servers/vserver/volumes/radarr:/config'
             - 'local_torrents_complete:/data/completed'
             - 'local_movies:/movies'
             - 'ext_movies:/wd_2tb_movies'
@@ -158,7 +158,7 @@ services:
             - PGID=0
             - TZ=America/Chicago
         volumes:
-            - '/media/vserver/FILES/Servers/vserver/volumes/lidarr:/config'
+            - '/media/vserver/FILES/dev/servers/vserver/volumes/lidarr:/config'
             - 'local_torrents_complete:/data/completed'
             - 'local_music:/music'
             - 'ext_music:/wd_2tb_music'
@@ -181,7 +181,7 @@ services:
             - PGID=999
             - TZ=America/Chicago
         volumes:
-            - '/media/vserver/FILES/Servers/vserver/volumes/whisparr:/config'
+            - '/media/vserver/FILES/dev/servers/vserver/volumes/whisparr:/config'
             - 'ext_porn_movies:/data/wd_4tb_porn_movies'
             - 'ext_porn_adult:/data//wd_4tb_porn_adult'
             - 'local_torrents_complete:/data/completed'
@@ -207,7 +207,7 @@ services:
             - TZ=America/Chicago
         logging: *v_logging
         volumes:
-            - '/media/vserver/FILES/Servers/vserver/volumes/bazarr:/config'
+            - '/media/vserver/FILES/dev/servers/vserver/volumes/bazarr:/config'
             - 'local_movies:/movies'
             - 'local_tv_shows:/tv_shows'
             - 'ext_movies:/wd_2tb_movies'
@@ -237,7 +237,7 @@ services:
             #- UMASK=002
             #- TZ=America/Chicago
         #volumes:
-            #- '/media/vserver/FILES/Servers/vserver/volumes/readarr:/config'
+            #- '/media/vserver/FILES/dev/servers/vserver/volumes/readarr:/config'
             #- 'local_ebooks/:/books'
         #ports:
             #- 8787:8787
@@ -259,7 +259,7 @@ services:
             - TZ=America/Chicago
             - JELLYFIN_PublishedServerUrl=192.168.0.25
         volumes:
-            - '/media/vserver/FILES/Servers/vserver/volumes/jellyfin:/config' # This can grow very large, 50gb+ is likely for a large collection.
+            - '/media/vserver/FILES/dev/servers/vserver/volumes/jellyfin:/config' # This can grow very large, 50gb+ is likely for a large collection.
             - 'local_movies:/data/movies'
             - 'local_tv_shows:/data/tv_shows'
             - 'ext_movies:/data/wd_2tb_movies'
@@ -285,7 +285,7 @@ services:
         environment:
             - TZ=America/Chicago
         volumes:
-            - '/media/vserver/FILES/Servers/vserver/volumes/uptime-kuma:/app/data'
+            - '/media/vserver/FILES/dev/servers/vserver/volumes/uptime-kuma:/app/data'
         ports:
             - 3001:3001
         restart: unless-stopped
@@ -319,15 +319,15 @@ services:
             ### Adjust below paths (the left part) to your liking.
             ### E.g. you can change ./config:/root/.stash to ./stash:/root/.stash
             ### Keep configs, scrapers, and plugins here.
-            #- '/media/vserver/FILES/Servers/vserver/volumes/stash:/root/.stash'
+            #- '/media/vserver/FILES/dev/servers/vserver/volumes/stash:/root/.stash'
             ### Point this at your collection.
             #- '/media/martokk/WD Elements 4TB/Porn/Adult:/data'
             ### This is where your stash's metadata lives
-            #- '/media/vserver/FILES/Servers/vserver/volumes/stash/metadata:/metadata'
+            #- '/media/vserver/FILES/dev/servers/vserver/volumes/stash/metadata:/metadata'
             ### Any other cache content.
-            #- '/media/vserver/FILES/Servers/vserver/volumes/stash/cache:/cache'
+            #- '/media/vserver/FILES/dev/servers/vserver/volumes/stash/cache:/cache'
             ### Where to store generated content (screenshots,previews,transcodes,sprites)
-            #- '/media/vserver/FILES/Servers/vserver/volumes/stash/generated:/generated'
+            #- '/media/vserver/FILES/dev/servers/vserver/volumes/stash/generated:/generated'
 
 
 # TOP-LEVEL CONFIG
@@ -338,7 +338,7 @@ networks:
 volumes:
   vserver:
     driver_opts:
-      device: "/media/vserver/FILES/Servers/vserver"
+      device: "/media/vserver/FILES/dev/servers/vserver"
       o: bind
       type: none
 
